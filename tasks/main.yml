@@ -1,6 +1,6 @@
 ---
 
-- puase:
+- pause:
     seconds: 10
 
 - name: Import templates on zabbix
