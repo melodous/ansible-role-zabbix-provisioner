@@ -12,5 +12,6 @@
     login_password: "{{ zabbix_password }}"
     server_url: "{{ zabbix_server }}"
   with_items: "{{ zabbix_templates }}"
+  changed_when: false
   become: no
 
