@@ -1,0 +1,13 @@
+---
+
+- name: Import templates on zabbix
+  local_action:
+    module: zabbix_template
+  #    template: "files/{{ item }}"
+    template: "{{ lookup('file', item) }}"
+    login_user: "{{ zabbix_user }}"
+    login_password: "{{ zabbix_password }}"
+    server_url: "{{ zabbix_server }}"
+  with_items: "{{ zabbix_templates }}"
+  become: no
+

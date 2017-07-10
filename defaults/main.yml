@@ -1,0 +1,8 @@
+---
+
+zabbix_user: Admin
+zabbix_password: zabbix
+zabbix_server: http://localhost
+
+zabbix_templates:
+  - zbx_export_redis.xml

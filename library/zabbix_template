@@ -1,0 +1,230 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# (c) 2017, Raúl Melo Fernández <raulmelo@gmail.com>
+#
+# This file is part of Ansible
+#
+# Ansible is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Ansible is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Ansible. If not, see <http://www.gnu.org/licenses/>.
+
+
+ANSIBLE_METADATA = {'metadata_version': '1.0',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
+
+
+DOCUMENTATION = '''
+
+module: zabbix_template
+short_description: Import Zabbix template configs
+description:
+    - This module will let you import Zabbix templates configs.
+version_added: "2.3"
+author: "Raúl Melo (@rmelo)"
+requirements:
+    - "python >= 2.6"
+    - zabbix-api
+options:
+    state:
+        description:
+            - Create or remove a template config 
+        required: false
+        default: present
+        choices: [ "present", "absent" ]
+    server_url:
+        description:
+            - Url of Zabbix server, with protocol (http or https).
+              C(url) is an alias for C(server_url).
+        required: true
+        default: null
+        aliases: [ "url" ]
+    login_user:
+        description:
+            - Zabbix user name.
+        required: true
+    login_password:
+        description:
+            - Zabbix user password.
+        required: true
+    template:
+        description:
+            - the xml file containing the template
+        required: true
+    timeout:
+        description:
+            - The timeout of API request (seconds).
+        default: 10
+        version_added: "2.1"
+        required: false
+notes:
+    - Module creates template from xmls
+    - Install required module with 'pip install zabbix-api' command.
+    - Checks existence only by maintenance name.
+'''
+
+EXAMPLES = '''
+- name: Create a template
+  zabbix_maintenance:
+    state: present
+    server_url: https://monitoring.example.com
+    login_user: ansible
+    login_password: pAsSwOrD
+    template: /path_to_xml
+
+'''
+
+import datetime
+import time
+
+HAS_ZABBIX_API = True
+
+try:
+    from zabbix_api import ZabbixAPI
+except ImportError:
+    HAS_ZABBIX_API = False
+
+
+def import_config(zbx, config):
+    try:
+        result = zbx.configuration.import_(
+            {
+                "format": "xml",
+    			"rules": {
+    				"groups": {
+    					"createMissing": "true",
+    					"updateExisting": "true",
+                        "deleteMissing": "true"
+    				},
+                    "items": {
+                        "createMissing": "true",
+                        "updateExisting": "true",
+                        "deleteMissing": "true"
+                    },
+                    "applications": {
+                        "createMissing": "true",
+                        "updateExisting": "true",
+                        "deleteMissing": "true"
+                    },
+                    "discoveryRules": {
+                        "createMissing": "true",
+                        "updateExisting": "true",
+                        "deleteMissing": "true"
+                    },
+                    "graphs": {
+                        "createMissing": "true",
+                        "updateExisting": "true",
+                        "deleteMissing": "true"
+                    },
+                    "httptests": {
+                        "createMissing": "true",
+                        "updateExisting": "true",
+                        "deleteMissing": "true"
+                    },
+                    "hosts": {
+                        "createMissing": "true",
+                        "updateExisting": "true",
+                        "deleteMissing": "true"
+                    },
+                    "maps": {
+                        "createMissing": "true",
+                        "updateExisting": "true",
+                    },
+                    "screens": {
+                        "createMissing": "true",
+                        "updateExisting": "true",
+                    },
+                    "templateLinkage": {
+                        "createMissing": "true",
+                    },
+                    "templates": {
+                        "createMissing": "true",
+                        "updateExisting": "true",
+                    },
+                    "templateScreens": {
+                        "createMissing": "true",
+                        "updateExisting": "true",
+                        "deleteMissing": "true"
+                    },
+                    "triggers": {
+                        "createMissing": "true",
+                        "updateExisting": "true",
+                        "deleteMissing": "true"
+                    },
+                    "valueMaps": {
+                        "createMissing": "true",
+                        "updateExisting": "true",
+                        "deleteMissing": "true"
+                    },
+    			},
+    			"source": config
+            }
+        )
+    except Exception as e:
+        return 1, None, str(e)
+    return 0, result, None
+
+
+def main():
+    module = AnsibleModule(
+        argument_spec=dict(
+            state=dict(required=False, default='present', choices=['present', 'absent']),
+            server_url=dict(type='str', required=True, default=None, aliases=['url']),
+            login_user=dict(type='str', required=True),
+            login_password=dict(type='str', required=True, no_log=True),
+            template=dict(type='str', required=True),
+            timeout=dict(type='int', default=10),
+        ),
+        supports_check_mode=False,
+    )
+
+    if not HAS_ZABBIX_API:
+        module.fail_json(msg="Missing requried zabbix-api module (check docs or install with: pip install zabbix-api)")
+
+    state = module.params['state']
+    login_user = module.params['login_user']
+    login_password = module.params['login_password']
+    template = module.params['template']
+    server_url = module.params['server_url']
+    timeout = module.params['timeout']
+
+    try:
+        zbx = ZabbixAPI(server_url, timeout=timeout)
+        zbx.login(login_user, login_password)
+    except BaseException as e:
+        module.fail_json(msg="Failed to connect to Zabbix server: %s" % e)
+
+    changed = False
+
+    if state == "present":
+#        try:
+#            with open(template, "r") as templatefile:
+#                config = templatefile.read().replace('\n', '')
+#        except BaseException as e:
+#            module.fail_json(msg="failed to read template file on zabbix server: %s" % str(e))
+        (rc, output, error) = import_config(zbx, template)
+        if rc == 0:
+            changed = True
+        else:
+            module.fail_json(msg="Error importing config: %s" % error)
+
+
+    if state == "absent":
+        pass
+
+    module.exit_json(changed=changed, output=output)
+
+from ansible.module_utils.basic import *
+
+if __name__ == '__main__':
+    main()
