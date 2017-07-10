@@ -1,5 +1,8 @@
 ---
 
+- puase:
+    seconds: 10
+
 - name: Import templates on zabbix
   local_action:
     module: zabbix_template
