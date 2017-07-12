@@ -1,7 +1,10 @@
 ---
 - hosts: all
   vars:
+    repo_epel: true
     zabbix_server: "http://{{ ansible_enp0s8.ipv4.address }}"
   roles:
+    - repos
+    - docker
     - zabbix-server-docker
     - zabbix-provisioner

@@ -1,0 +1,12 @@
+- src: https://github.com/melodous/ansible-role-zabbix-server-docker.git
+  scm: git
+  version: master
+  name: zabbix-server-docker
+- src: https://github.com/melodous/ansible-role-docker.git
+  scm: git
+  version: master
+  name: docker
+- src: https://github.com/melodous/ansible-role-repos.git
+  scm: git
+  version: master
+  name: repos

@@ -1,15 +1,12 @@
 ---
 
-- name: Wait untils Zabbis web is available
+- name: Wait untils Zabbix web is available
   command: curl --head --silent {{ zabbix_server }}/
   register: result
   until: result.stdout.find("200 OK") != -1
   retries: 12
   delay: 5
   changed_when: false
-
-#- pause:
-#    seconds: 15
 
 - name: Import templates on zabbix
   local_action:
