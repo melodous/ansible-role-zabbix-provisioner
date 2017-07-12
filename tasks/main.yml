@@ -1,12 +1,19 @@
 ---
 
-- pause:
-    seconds: 15
+- name: Wait untils Zabbis web is available
+  command: curl --head --silent {{ zabbix_server }}/
+  register: result
+  until: result.stdout.find("200 OK") != -1
+  retries: 12
+  delay: 5
+  changed_when: false
+
+#- pause:
+#    seconds: 15
 
 - name: Import templates on zabbix
   local_action:
     module: zabbix_template
-  #    template: "files/{{ item }}"
     template: "{{ lookup('file', item) }}"
     login_user: "{{ zabbix_user }}"
     login_password: "{{ zabbix_password }}"
