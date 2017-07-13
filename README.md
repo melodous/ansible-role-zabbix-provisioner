@@ -80,6 +80,12 @@ changelog.
 
 -   First change
 
+### zabbix-provisioner v0.0.1 - 2017/07/13
+
+##### Added
+
+-   Fixed ansible-lint warnings
+
 ### zabbix-provisioner v0.0.1 - 2017/07/12
 
 ##### Added
