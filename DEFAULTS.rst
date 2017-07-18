@@ -57,6 +57,7 @@ zabbix configurations
     - zbx_export_logstash.xml
     - zbx_export_es_env.xml
     - zbx_export_es_app.xml
+    - zbx_export_postgres.xml
 
 
 

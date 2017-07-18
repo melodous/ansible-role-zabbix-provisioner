@@ -61,6 +61,7 @@ zabbix-provisioner ansible role default variables
       - zbx_export_logstash.xml
       - zbx_export_es_env.xml
       - zbx_export_es_app.xml
+      - zbx_export_postgres.xml
 
 Changelog
 ---------
@@ -80,7 +81,13 @@ changelog.
 
 -   First change
 
-### zabbix-provisioner v0.0.1 - 2017/07/13
+### zabbix-provisioner v0.0.3 - 2017/07/17
+
+##### Added
+
+-   Added potsgresql templates
+
+### zabbix-provisioner v0.0.2 - 2017/07/13
 
 ##### Added
 
