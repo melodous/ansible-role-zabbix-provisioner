@@ -81,6 +81,12 @@ changelog.
 
 -   First change
 
+### zabbix-provisioner v0.0.4 - 2017/07/18
+
+##### Added
+
+-   Added retries
+
 ### zabbix-provisioner v0.0.3 - 2017/07/17
 
 ##### Added
