@@ -19,4 +19,6 @@
     server_url: "{{ zabbix_server }}"
   with_items: "{{ zabbix_templates }}"
   changed_when: false
+  retries: 2
+  delay: 2
   become: no
