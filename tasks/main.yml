@@ -10,6 +10,8 @@
   tags:
     - skip_ansible_lint
 
+- pause: seconds=5
+
 - name: Import templates on zabbix
   local_action:
     module: zabbix_template
